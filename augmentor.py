@@ -2,10 +2,8 @@
 # author: gugs
 
 import os
+import argparse
 import cv2
-
-input_dir = '/code/research/testin'
-output_dir = '/code/research/testout'
 
 def load_filepaths(directory):
     return([os.path.join(directory, filename) for filename in os.listdir(directory)])
@@ -23,7 +21,7 @@ def create_rotations(image):
     img_270 = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
     return (img_0, img_90, img_180, img_270)
 
-def flip_all_images(image_paths, output_dir, legal_size = (1024, 1024, 3)):
+def flip_all_images(image_paths, output_dir, legal_size=(1024, 1024, 3)):
     for fullpath in image_paths:
         filename = os.path.basename(fullpath)
         image = cv2.imread(fullpath)
@@ -44,12 +42,23 @@ def flip_all_images(image_paths, output_dir, legal_size = (1024, 1024, 3)):
         cv2.imwrite(os.path.join(output_dir, f'flip_180_{filename}'), augs[1][2])
         cv2.imwrite(os.path.join(output_dir, f'flip_270_{filename}'), augs[1][3])
 
-def main():
-    print('AUTO AUGMENTOR WOOT')
-    print('incrase datasize by 8x')
-    print('4x rotations, flip. and 4x rotations')
+def execute_cmdline():
+    parser = argparse.ArgumentParser(
+        prog = 'Image Dataset Auto Augmentor',
+        description='Increase dataset size by 8x. Perform 4x rotations, flip image, then 4x more rotations.',
+        epilog= 'Source Code: https://github.com/gagandaroach/python_image_prep'
+    )
+    parser.add_argument('--input','-i', help='Path to input dataset directory.', required=True)
+    parser.add_argument('--output','-o', help='Path to augmented dataset dump directory.', required=True)
+    parser.add_argument('--ext', help='File extension of input images.', default='.png')
+    parser.add_argument('--size', help='Size of valid image to import.', default=(1024,1024,3))
+    args = parser.parse_args()
+    
+    input_dir = args.input
+    output_dir = args.output
+    legal_shape = args.size
     image_paths = load_filepaths(input_dir)
-    flip_all_images(image_paths, output_dir)
+    flip_all_images(image_paths, output_dir, legal_shape)
 
 if __name__ == "__main__":
-    main()
+    execute_cmdline()
