@@ -72,7 +72,7 @@ def execute_cmdline():
     parser.add_argument('--output','-o', help='Path to augmented dataset dump directory.', required=True)
     parser.add_argument('--ext', help='File extension of input images. (currently ignored)', default='.png')
     parser.add_argument('--size', help='Size of valid image to import.', default=(1024,1024,3))
-    parser.add_argument('--flip', help='Flip images and perform 4x more augmentations', default=True)
+    parser.add_argument('--flip', help='Flip images (left-right) and perform 4x more augmentations', default=True)
     args = parser.parse_args()
     
     input_dir = args.input
