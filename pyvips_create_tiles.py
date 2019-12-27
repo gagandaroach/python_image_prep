@@ -50,14 +50,12 @@ def create_tiles_with_vips(image_path):
             tile = img.extract_area(x,y,tile_w,tile_h)
             save_tile(tiff_name, tile, x, y, output_dir)
             debug_count = debug_count + 1
-    return tiles
 
 def save_tile(tile_name, tile, xpos, ypos, output_dir):
-    for index, tile in enumerate(tiles):
-        filename = f'{tile_name}_{xpos}_{ypos}.png'
-        save_path = os.path.join(output_dir, filename)
-        tile.pngsave(save_path)
-        print(f'saved tile: {filename}')
+    filename = f'{tile_name}_{xpos}_{ypos}.png'
+    save_path = os.path.join(output_dir, filename)
+    tile.pngsave(save_path)
+    print(f'saved tile: {filename}')
 
 if __name__ == '__main__':
         
