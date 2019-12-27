@@ -1,6 +1,7 @@
 import pyvips
 import os.path 
 import re
+from datetime import datetime
 
 def load_all_img_paths(dir_to_search):
     filepaths = []
@@ -68,7 +69,12 @@ if __name__ == '__main__':
     filenames = load_all_img_paths(input_dir)
     #print(filenames)
 
-    create_tiles_with_vips(filenames[0])
+    #create_tiles_with_vips(filenames[0])
+
+    for image_filepath in filenames:
+        starttime = datetime.now()
+        create_tiles_with_vips(image_filepath)
+        print(f'tiled {image_filepath} in {(datetime.now()-starttime).seconds}')
 
     print('done with script. file in output dir')
     
