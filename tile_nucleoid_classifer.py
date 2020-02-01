@@ -51,7 +51,10 @@ def load_img(img_path):
     input: (string) img path
     return: (array[string]) dir+path
     '''
+    start_time = time.time()
     img = skimage.io.imread(img_path)[:, :, :3]
+    run_time = time.time() - start_time
+    print(f'loaded img in {run_time} sec')
     return img
 
 def calculate_nucleiod_count(he_img):
@@ -71,7 +74,6 @@ def calculate_nucleiod_count(he_img):
 
     # perform standard color deconvolution
     im_stains = htk.preprocessing.color_deconvolution.color_deconvolution(he_img, W).Stains
-
     
     # get nuclei/hematoxylin channel
     im_nuclei_stain = im_stains[:, :, 0]
@@ -106,16 +108,15 @@ def calculate_nucleiod_count(he_img):
 
     # compute nuclei properties
     objProps = skimage.measure.regionprops(im_nuclei_seg_mask)
-
-    print ('Number of nuclei = ', len(objProps))
-
     return len(objProps)
 
 if __name__ == "__main__":
     print('starting program!')
-    imgs = load_img_filenames(tiles_dir)
-    img = load_img(imgs[15])
-    print('counting nucleoids')
-    count = calculate_nucleiod_count(img)
-    print(f'count: {count}')
+    img_paths = load_img_filenames(tiles_dir)
+    for index, path in enumerate(img_paths):
+        img = load_img(path)
+        start_time = time.time()
+        count = calculate_nucleiod_count(img)
+        calc_time = time.time() - start_time
+        print(f'{index} | count: {count} | {calc_time} sec')
     print ('ending program')
