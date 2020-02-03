@@ -7,6 +7,7 @@ import os
 from os import system
 import math
 import time
+import argparse
 import histomicstk as htk
 import numpy as np
 import scipy as sp
@@ -14,7 +15,6 @@ import skimage.io
 import skimage.measure
 import skimage.color
 
-tiles_dir = "/srv/dh-mcw_research/tiles/prostate_he_tiles_0.5x"
 stainColorMap = {
     'hematoxylin': [0.65, 0.70, 0.29],
     'eosin':       [0.07, 0.99, 0.11],
@@ -110,7 +110,16 @@ def calculate_nucleiod_count(he_img):
     objProps = skimage.measure.regionprops(im_nuclei_seg_mask)
     return len(objProps)
 
-if __name__ == "__main__":
+
+def init_output_dir(output_dir):
+    print('initializing output directory')
+    output_dirs = ['0','1-20','21-100','100+']
+    for folder in output_dirs:
+        path = os.path.join(output_dir, folder)
+        os.mkdir(path, 493 )
+    print('done.')
+
+def classify_tiles(tiles_dir, output_dir):
     print('starting program!')
     img_paths = load_img_filenames(tiles_dir)
     for index, path in enumerate(img_paths):
@@ -120,3 +129,20 @@ if __name__ == "__main__":
         calc_time = time.time() - start_time
         print(f'{index} | count: {count} | {calc_time} sec')
     print ('ending program')
+
+def execute_cmdline():
+    parser = argparse.ArgumentParser(
+        prog = 'Tile Nucleoid Classifier',
+        description='Classify WSI as good or bad depending on Nucleoid Count. Uses HistomicsTK library.',
+        epilog= 'Source Code: https://github.com/gagandaroach/python_image_prep'
+    )
+    parser.add_argument('--input','-i', help='WSI H&E Histology tiles directory.', required=True)
+    parser.add_argument('--output','-o', help='Path to dump classified tiles.', required=True)
+    args = parser.parse_args()
+    input_dir = args.input
+    output_dir = args.output
+    init_output_dir(output_dir)
+    classify_tiles(input_dir,output_dir)
+
+if __name__ == "__main__":
+    execute_cmdline()
