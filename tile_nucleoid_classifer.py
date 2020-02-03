@@ -22,28 +22,26 @@ stainColorMap = {
     'null':        [0.0, 0.0, 0.0]
 }
 
+output_dirs = ['0','1-20','21-100','100+']
+
 def load_img_filenames(directory):
     '''
     input: (string) dir to call
-    return: (array[string]) dir+path
+    return: (array[string], string) dir+path, tile_name (no ext)
     '''
-    # names = []
-    # print(f'fetching filenames from {directory}')
-    # start_time = time.time()
-    # count = 0
-    # load_limit = 10
-    # for filename in os.listdir(directory):
-    #     names.append(filename)
-    #     count = count + 1
-    #     if count == load_limit
-    #         break
-    # load_time = time.time() - start_time
-    # print(f'fetched {len(names)} filenames in {load_time} seconds.')
-    names = ["247_12_x0.5__18432_63488.png", "247_12_x0.5__18432_64512.png", "247_12_x0.5__18432_65536.png", "247_12_x0.5__18432_66560.png", "247_12_x0.5__18432_67584.png", "247_12_x0.5__18432_68608.png", "247_12_x0.5__18432_69632.png", "247_12_x0.5__18432_70656.png", "247_12_x0.5__18432_7168.png", "247_12_x0.5__18432_71680.png", "247_12_x0.5__18432_72704.png", "247_12_x0.5__18432_73728.png", "247_12_x0.5__18432_74752.png", "247_12_x0.5__18432_75776.png", "247_12_x0.5__18432_76800.png", "247_12_x0.5__18432_77824.png", "247_12_x0.5__18432_78848.png", "247_12_x0.5__18432_79872.png", "247_12_x0.5__18432_80896.png", "247_12_x0.5__18432_8192.png", "247_12_x0.5__18432_81920.png", "247_12_x0.5__18432_82944.png", "247_12_x0.5__18432_83968.png", "247_12_x0.5__18432_84992.png", "247_12_x0.5__18432_86016.png", "247_12_x0.5__18432_87040.png", "247_12_x0.5__18432_88064.png", "247_12_x0.5__18432_89088.png", "247_12_x0.5__18432_90112.png", "247_12_x0.5__18432_91136.png", "247_12_x0.5__18432_9216.png", "247_12_x0.5__18432_92160.png", "247_12_x0.5__18432_93184.png"]
+    names = []
+    print(f'fetching filenames from {directory}')
+    start_time = time.time()
+    count = 0
+    for filename in os.listdir(directory):
+        names.append(filename)
+    load_time = time.time() - start_time
+    print(f'fetched {len(names)} filenames in {load_time} seconds.')
+
     full_paths = []
     for name in names:
         img_path = os.path.join(directory, name)
-        full_paths.append(img_path)
+        full_paths.append((img_path, os.path.splitext(name)[0]))
     return full_paths
 
 def load_img(img_path):
@@ -113,21 +111,35 @@ def calculate_nucleiod_count(he_img):
 
 def init_output_dir(output_dir):
     print('initializing output directory')
-    output_dirs = ['0','1-20','21-100','100+']
     for folder in output_dirs:
         path = os.path.join(output_dir, folder)
-        os.mkdir(path, 493 )
+        if not os.path.isdir(path):
+            os.mkdir(path, 493 )
     print('done.')
+
+def save_tile_by_count(img, name, count, output_dir):
+    save_dir = None
+    if count >= 100:
+        save_dir = os.path.join(output_dir, output_dirs[3])
+    elif count >= 21:
+        save_dir = os.path.join(output_dir, output_dirs[2])
+    elif count>=1:
+        save_dir = os.path.join(output_dir, output_dirs[1])
+    else:
+        save_dir = os.path.join(output_dir, output_dirs[0])
+    save_path = os.path.join(save_dir, f'{name}_nuc{count}.png')
+    skimage.io.imsave(save_path, img)
 
 def classify_tiles(tiles_dir, output_dir):
     print('starting program!')
     img_paths = load_img_filenames(tiles_dir)
-    for index, path in enumerate(img_paths):
+    for index, (path, name) in enumerate(img_paths):
         img = load_img(path)
         start_time = time.time()
         count = calculate_nucleiod_count(img)
         calc_time = time.time() - start_time
         print(f'{index} | count: {count} | {calc_time} sec')
+        save_tile_by_count(img, name, count, output_dir)
     print ('ending program')
 
 def execute_cmdline():
