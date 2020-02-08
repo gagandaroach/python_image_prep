@@ -3,7 +3,8 @@
 Collection of python data processing ETL tools and jupyter notebooks I use to prepare image data for neural network training and research.
 
 > Gagan Daroach <gagandaroach@gmail.com>
-> github.com/gagandaroach/python_image_prep
+
+Github: github.com/gagandaroach/python_image_prep
 
 ## tile_nucleoid_classifier.py
 
@@ -55,7 +56,11 @@ $ python augmentor.py -i /research/input_image_dir -o /research/output_image_dir
 
 ## Research Folder
 
-this is where I experiment with python and image data preprocessing
+this is where I experiment with python and image data preprocessing libraries before turning them into scripts.
+
+### HistomicsTK
+
+The HistomicsTK python modules has many great algorithms for h&e image processing. Here I experimented with the effectiveness of them before turning them into WSI processing scripts. You can easily pratice and finetune your specific stain deconvolution filters with these research notebooks.
 
 ### Clustering Filter
 
