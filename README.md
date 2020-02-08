@@ -2,6 +2,9 @@
 
 Collection of python data processing ETL tools and jupyter notebooks I use to prepare image data for neural network training and research.
 
+> Gagan Daroach <gagandaroach@gmail.com>
+> github.com/gagandaroach/python_image_prep
+
 ## augmentor.py
 
 This will take an input directory of images and augment them into a dataset 8x larger (in image count).
