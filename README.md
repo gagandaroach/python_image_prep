@@ -5,6 +5,34 @@ Collection of python data processing ETL tools and jupyter notebooks I use to pr
 > Gagan Daroach <gagandaroach@gmail.com>
 > github.com/gagandaroach/python_image_prep
 
+## tile_nucleoid_classifier.py
+
+This program is used to solve data cleaning problems with whole slide images. When slicing a large WSI into many tiles, lazy algorithms will include white backgrounds tiles from the edges of the WSI in addition to the tiles covering tissue samples in the center.
+
+This script will take an input directory of H&E stained tiles, and output the tiles into groups based on the number of nucleoids in each tile.
+
+Thanks to the HistomicsTK python team for an open source nucleoid classifier algorithem.
+
+**Input**
+
+H&E stained tissue samples. Can apply different color stainings by updating color threshold map in script. Any skimage compatible image type.
+
+**Output**
+
+In output folder, default config is to bin tiles into 4 groupings. 
+
+ * 0 nucleoids
+ * 1-20 nucleoids
+ * 21-100 nucleoids
+ * 100+ nucleoids
+
+**Example Usage**
+
+```bash
+$ python tile_nucleoid_classifier.py -i /research/input_image_dir -o /research/output_image_dir
+```
+From tiling 20 WSI prostate images, 130k 1024x1024 png tiles were generated. This script was then used to clean that dataset. Yielded 87k tiles with 100+ nucleoids. Good for GAN training.
+
 ## augmentor.py
 
 This will take an input directory of images and augment them into a dataset 8x larger (in image count).
