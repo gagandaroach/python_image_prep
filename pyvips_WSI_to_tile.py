@@ -88,8 +88,8 @@ def execute_cmdline():
     input_dir = args.input
     output_dir = args.output
     valid_ext = args.ext
-    scale = args.scale
-    count = args.count
+    scale = float(args.scale)
+    count = int(args.count)
     t_size = (1024, 1024)
 
     print(f'input dir: {input_dir}')
