@@ -22,7 +22,7 @@ stainColorMap = {
     'null':        [0.0, 0.0, 0.0]
 }
 
-output_dirs = ['0','1-20','21-100','100+']
+output_dirs = ['0','1-10','11-100','100+']
 
 def load_img_filenames(directory):
     '''
@@ -108,7 +108,6 @@ def calculate_nucleiod_count(he_img):
     objProps = skimage.measure.regionprops(im_nuclei_seg_mask)
     return len(objProps)
 
-
 def init_output_dir(output_dir):
     print('initializing output directory')
     for folder in output_dirs:
@@ -121,7 +120,7 @@ def save_tile_by_count(img, name, count, output_dir):
     save_dir = None
     if count >= 100:
         save_dir = os.path.join(output_dir, output_dirs[3])
-    elif count >= 21:
+    elif count >= 11:
         save_dir = os.path.join(output_dir, output_dirs[2])
     elif count>=1:
         save_dir = os.path.join(output_dir, output_dirs[1])
@@ -130,31 +129,45 @@ def save_tile_by_count(img, name, count, output_dir):
     save_path = os.path.join(save_dir, f'{name}_nuc{count}.png')
     skimage.io.imsave(save_path, img)
 
-def classify_tiles(tiles_dir, output_dir):
+def main(tiles_dir, output_dir, single):
     print('starting program!')
-    img_paths = load_img_filenames(tiles_dir)
-    for index, (path, name) in enumerate(img_paths):
-        img = load_img(path)
+    if single:
+        print('executing on single file')
+        name = os.path.basename(tiles_dir)
+        name = os.path.splitext(name)[0]
+        img = load_img(tiles_dir)
+        count = count_tile_nucleoids(img)
+        save_tile_by_count(img, name, count, output_dir)
+    else:
+        img_paths = load_img_filenames(tiles_dir)
+        for index, (path, name) in enumerate(img_paths):
+            img = load_img(path)
+            count, calc_time = count_tile_nucleoids(img)
+            save_tile_by_count(img, name, count, output_dir)
+            print(f'{index} | count: {count} | {calc_time} sec')
+    print ('ending program')
+
+def count_tile_nucleoids(img):
         start_time = time.time()
         count = calculate_nucleiod_count(img)
         calc_time = time.time() - start_time
-        print(f'{index} | count: {count} | {calc_time} sec')
-        save_tile_by_count(img, name, count, output_dir)
-    print ('ending program')
+        return count, calc_time
 
 def execute_cmdline():
     parser = argparse.ArgumentParser(
-        prog = 'Tile Nucleoid Classifier',
+        prog = 'Histology Tile - Nucleoid Classifier',
         description='Classify WSI as good or bad depending on Nucleoid Count. Uses HistomicsTK library.',
         epilog= 'Source Code: https://github.com/gagandaroach/python_image_prep'
     )
     parser.add_argument('--input','-i', help='WSI H&E Histology tiles directory.', required=True)
     parser.add_argument('--output','-o', help='Path to dump classified tiles.', required=True)
+    parser.add_argument('--single','-s', help='Boolean flag if input is single image, not directory. Default False', default=False)
     args = parser.parse_args()
     input_dir = args.input
     output_dir = args.output
+    single = args.single
     init_output_dir(output_dir)
-    classify_tiles(input_dir,output_dir)
+    main(input_dir,output_dir, single)
 
 if __name__ == "__main__":
     execute_cmdline()
