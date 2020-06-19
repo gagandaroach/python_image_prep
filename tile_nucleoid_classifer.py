@@ -136,7 +136,8 @@ def main(tiles_dir, output_dir, single):
         name = os.path.basename(tiles_dir)
         name = os.path.splitext(name)[0]
         img = load_img(tiles_dir)
-        count = count_tile_nucleoids(img)
+        count, calc_time = count_tile_nucleoids(img)
+        print(f'count: {count} | {calc_time} sec')
         save_tile_by_count(img, name, count, output_dir)
     else:
         img_paths = load_img_filenames(tiles_dir)
